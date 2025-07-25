@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Floating Model with Upright Icons</title>
+  <link rel="stylesheet" href="responsive.css" />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      background: url('images/home-background.png') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+      opacity: 0;
+      animation: fadeInBackground 2s forwards;
+    }
+    @keyframes fadeInBackground { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+    model-viewer.floating {
+      animation: float 4s ease-in-out infinite, fadeInModel 2s ease-in forwards;
+      width: 80vw;
+      height: 80vh;
+      max-width: 800px;
+      max-height: 800px;
+      z-index: 3;
+    }
+    @keyframes fadeInModel { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .smoke {
+      position: absolute;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.03), transparent 40%),
+                  radial-gradient(circle at 70% 70%, rgba(255,255,255,0.03), transparent 40%);
+      backdrop-filter: blur(2px);
+      animation: moveSmoke 120s linear infinite;
+      z-index: 0;
+    }
+    @keyframes moveSmoke {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-50px, -50px) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, yellow 0%, rgba(255, 255, 0, 0) 70%);
+      border-radius: 50%;
+      filter: blur(2px);
+      opacity: 0.8;
+      animation: drift 15s ease-in-out infinite alternate;
+      z-index: 1;
+    }
+    @keyframes drift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(20px, -20px); }
+      100% { transform: translate(-20px, 20px); }
+    }
+    .icon-ring {
+      position: absolute;
+      width: 550px;
+      height: 550px;
+      border-radius: 50%;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .icon-wrapper {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      backdrop-filter: blur(3px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 22px;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 0.3s;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+      transform: translate(-50%, -50%);
+    }
+    @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .icon-wrapper:hover { box-shadow: 0 0 10px yellow, 0 0 50px yellow; }
+    .icon-ring a i { color: white; font-size: 20px; }
+    .icon1 { top: 0%; left: 50%; }
+    .icon2 { top: 15%; left: 85%; }
+    .icon3 { top: 50%; left: 100%; }
+    .icon4 { top: 85%; left: 85%; }
+    .icon5 { top: 100%; left: 50%; }
+    .icon6 { top: 85%; left: 15%; }
+    .icon7 { top: 50%; left: 0%; }
+    .icon8 { top: 15%; left: 15%; }
+    #tooltip {
+      position: absolute;
+      background: rgba(0,0,0,0.3);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 999;
+    }
+
+    /* General Styles - for desktop and larger screens */
+    #iconRing {
+      display: block;
+    }
+    .d-md-none a {
+      color: white;
+      text-decoration: none;
+    }
+    .d-md-none {
+      display: flex;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60%;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 5;
+      padding: 0 20px;
+      transition: all 0.5s ease;
+    }
+    .left-icons, .right-icons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      transition: all 0.5s ease;
+    }
+    .left-icons { margin-right: 20px; }
+    .right-icons { margin-left: 20px; }
+
+    @keyframes iconPop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .d-md-none .icon-wrapper {
+      opacity: 1;
+      animation: iconPop 0.5s ease forwards;
+      position: relative;
+      width: 50px;
+      height: 50px;
+      margin: 10px 0;
+      transition: transform 0.5s ease, margin 0.5s ease;
+    }
+
+    .d-md-none .icon-wrapper:nth-child(1) { animation-delay: 0s; }
+    .d-md-none .icon-wrapper:nth-child(2) { animation-delay: 0.1s; }
+    .d-md-none .icon-wrapper:nth-child(3) { animation-delay: 0.2s; }
+    .d-md-none .icon-wrapper:nth-child(4) { animation-delay: 0.3s; }
+
+    /* Updated Mobile Styles */
+    @media (max-width: 767.98px) {
+      #iconRing {
+        display: none !important;
+      }
+
+      .d-md-none {
+        width: 90%;
+        padding: 0 10px;
+      }
+
+      .left-icons, .right-icons {
+        gap: 15px;
+      }
+
+      .d-md-none .icon-wrapper {
+        width: 40px;
+        height: 40px;
+        margin: 5px 0;
+      }
+
+      model-viewer.floating {
+        width: 90vw;
+        max-width: 350px;
+        max-height: 350px;
+        display: block;
+        margin: 0 auto;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="smoke"></div>
+  <audio id="bg-music" src="sound/audio/birds39-forest-20772.mp3" autoplay loop></audio>
+  <script>
+    document.addEventListener('click', function playMusicOnce() {
+      document.getElementById('bg-music').play().catch(e => console.log('Autoplay blocked:', e));
+      document.removeEventListener('click', playMusicOnce);
+    });
+
+    for (let i = 0; i < 50; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.top = Math.random() * 100 + 'vh';
+      particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+      document.body.appendChild(particle);
+    }
+  </script>
+
+  <model-viewer src="models/wizard-transformed.glb" alt="Wizard Model"
+    camera-controls interaction-prompt="none" disable-zoom 
+    camera-orbit="0deg 90deg auto" min-camera-orbit="auto 90deg auto"
+    max-camera-orbit="auto 90deg auto" min-field-of-view="30deg"
+    max-field-of-view="30deg" class="floating">
+  </model-viewer>
+
+  <div class="icon-ring" id="iconRing">
+    <div class="icon-wrapper icon1"><a href="Home.html"><i class="fas fa-home"></i></a></div>
+    <div class="icon-wrapper icon2"><a href="https://www.tiktok.com/@YourTikTokUsername" target="_blank"><i class="fab fa-tiktok"></i></a></div>
+    <div class="icon-wrapper icon3"><a href="about.html"><i class="fas fa-user"></i></a></div>
+    <div class="icon-wrapper icon4"><a href="port.html"><i class="fas fa-paint-brush"></i></a></div>
+    <div class="icon-wrapper icon5"><a href="Contact.html"><i class="fas fa-envelope"></i></a></div>
+    <div class="icon-wrapper icon6"><a href="https://www.facebook.com/YourFacebookUsername" target="_blank"><i class="fab fa-facebook-f"></i></a></div>
+    <div class="icon-wrapper icon7"><a href="https://www.instagram.com/YourInstagramUsername" target="_blank"><i class="fab fa-instagram"></i></a></div>
+    <div class="icon-wrapper icon8"><a href="https://github.com/YourGithubUsername" target="_blank"><i class="fab fa-github"></i></a></div>
+  </div>
+
+  <div class="d-flex d-md-none">
+    <div class="left-icons">
+      <div class="icon-wrapper"><div class="inner-icon"><a href="Home.html"><i class="fas fa-home"></i></a></div></div>
+      <div class="icon-wrapper"><div class="inner-icon"><a href="https://www.tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a></div></div>
+      <div class="icon-wrapper"><div class="inner-icon"><a href="about.html"><i class="fas fa-user"></i></a></div></div>
+      <div class="icon-wrapper"><div class="inner-icon"><a href="port.html"><i class="fas fa-paint-brush"></i></a></div></div>
+    </div>
+    <div class="right-icons">
+      <div class="icon-wrapper"><div class="inner-icon"><a href="Contact.html"><i class="fas fa-envelope"></i></a></div></div>
+      <div class="icon-wrapper"><div class="inner-icon"><a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a></div></div>
+      <div class="icon-wrapper"><div class="inner-icon"><a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a></div></div>
+      <div class="icon-wrapper"><div class="inner-icon"><a href="https://github.com/" target="_blank"><i class="fab fa-github"></i></a></div></div>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script>
+    const iconRing = document.getElementById('iconRing');
+    const icons = iconRing.querySelectorAll('.icon-wrapper');
+    let angle = -10;
+    let paused = false;
+
+    function rotateRing() {
+      if (!paused) angle += 0.1;
+      iconRing.style.transform = `rotate(${angle}deg)`;
+      icons.forEach(icon => {
+        icon.style.transform = `translate(-50%, -50%) rotate(${-angle}deg)`;
+      });
+      requestAnimationFrame(rotateRing);
+    }
+    rotateRing();
+
+    icons.forEach(wrapper => {
+      wrapper.addEventListener('mouseenter', () => paused = true);
+      wrapper.addEventListener('mouseleave', () => paused = false);
+    });
+
+    const tooltip = document.getElementById('tooltip');
+    icons.forEach(icon => {
+      icon.addEventListener('mouseenter', () => {
+        let text = '';
+        const iconClass = icon.querySelector('i').classList;
+        if (iconClass.contains('fa-home')) text = 'Home';
+        else if (iconClass.contains('fa-tiktok')) text = 'TikTok';
+        else if (iconClass.contains('fa-user')) text = 'About';
+        else if (iconClass.contains('fa-paint-brush')) text = 'Portfolio';
+        else if (iconClass.contains('fa-envelope')) text = 'Contact';
+        else if (iconClass.contains('fa-facebook-f')) text = 'Facebook';
+        else if (iconClass.contains('fa-instagram')) text = 'Instagram';
+        else if (iconClass.contains('fa-github')) text = 'GitHub';
+        tooltip.innerText = text;
+        tooltip.style.opacity = 1;
+      });
+
+      icon.addEventListener('mousemove', e => {
+        tooltip.style.left = e.pageX + 15 + 'px';
+        tooltip.style.top = e.pageY + 15 + 'px';
+      });
+
+      icon.addEventListener('mouseleave', () => {
+        tooltip.style.opacity = 0;
+      });
+    });
+  </script>
+</body>
+</html>

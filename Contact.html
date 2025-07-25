@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Contact • Smoke & Particles</title>
+  <style>
+    /* Basic styling */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: url('images/contact-background.png') no-repeat center center;
+      background-size: cover;
+      font-family: sans-serif;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeInBg 3s ease-out forwards;
+    }
+
+    @keyframes fadeInBg {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .smoke {
+      position: absolute;
+      width: 300%;
+      height: 300%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.03), transparent 40%),
+        radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.03), transparent 40%);
+      backdrop-filter: blur(2px);
+      animation: moveSmoke 120s linear infinite;
+      z-index: 0;
+      opacity: 0;
+      animation: fadeInSmoke 3s ease-out forwards;
+    }
+
+    @keyframes fadeInSmoke {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes moveSmoke {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-50px, -50px) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+
+    /* Icon wrapper */
+    .icon-wrapper {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 50px;
+      height: 50px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      backdrop-filter: blur(3px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      z-index: 50;
+      transition: transform 0.3s;
+      opacity: 0;
+      animation: fadeInIcon 4s ease-out forwards;
+    }
+
+    @keyframes fadeInIcon {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* Contact section */
+    .contact-section {
+      width: 90%;
+      max-width: 480px;
+      padding: 40px;
+      backdrop-filter: blur(0px);
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeInForm 4s ease-out 1s forwards;
+    }
+
+    @keyframes fadeInForm {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .contact-section h2 {
+      margin-bottom: 20px;
+      font-size: 2.2em;
+    }
+
+    /* Contact form inputs and button */
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      backdrop-filter: blur(2px);
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .contact-form button {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      background: #e3a600;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .contact-form button:hover {
+      background: #c48e00;
+    }
+
+    .icon-wrapper:hover {
+      transform: scale(1.1);
+    }
+
+    /* Particle animations */
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, yellow 0%, rgba(255, 255, 0, 0) 70%);
+      border-radius: 50%;
+      filter: blur(2px);
+      opacity: 0;
+      animation: drift 15s ease-in-out infinite alternate, fadeInParticle 2s ease-in forwards;
+      z-index: 1;
+    }
+
+    @keyframes fadeInParticle {
+      0% { opacity: 0; }
+      100% { opacity: 0.8; }
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(20px, -20px); }
+      100% { transform: translate(-20px, 20px); }
+    }
+
+    /* Responsive styles */
+    @media screen and (max-width: 768px) {
+      .contact-section {
+        padding: 30px;
+        max-width: 90%;
+      }
+
+      .contact-section h2 {
+        font-size: 1.8em;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        padding: 10px;
+      }
+
+      .contact-form button {
+        font-size: 0.9em;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      html, body {
+        background-size: cover;
+        padding: 0;
+      }
+
+      .smoke {
+        width: 200%;
+        height: 200%;
+      }
+
+      .contact-section {
+        padding: 20px;
+        max-width: 100%;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .contact-section h2 {
+        font-size: 1.5em;
+      }
+
+      .contact-form input,
+      .contact-form textarea {
+        font-size: 14px;
+      }
+
+      .contact-form button {
+        padding: 10px 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="smoke"></div>
+  <audio id="bg-music" src="sound/audio/birds39-forest-20772.mp3" autoplay loop></audio>
+
+  <div class="icon-wrapper" onclick="location.href='Home.html'">
+    <i class="fas fa-home"></i>
+  </div>
+
+  <section class="contact-section">
+    <h2>Get in Touch</h2>
+   <p>If you have any inquiries, collaboration opportunities, or would simply like to get in touch, please feel free to contact me. I am open to professional discussions and look forward to connecting with you.</p>
+
+    <form class="contact-form" action="https://formspree.io/f/xdkdazoz" method="POST">
+      <input type="hidden" name="_subject" value="New message from website" />
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="_replyto" placeholder="Your Email" required />
+      <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <script>
+    // Create particles with staggered animation
+    for (let i = 0; i < 60; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.top = Math.random() * 100 + 'vh';
+      p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+      p.style.animationDelay = Math.random() * 3 + 's'; // Added delay for particles
+      document.body.appendChild(p);
+    }
+
+    document.querySelector('.contact-form').addEventListener('submit', e => {
+      setTimeout(() => alert('🎉 Message sent! I’ll reply soon.'), 500);
+    });
+  </script>
+
+</body>
+</html>

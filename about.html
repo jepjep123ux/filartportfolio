@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Portfolio Showcase</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="">
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: url('images/about-background.png') no-repeat center center;
+      background-size: cover;
+      display: flex; justify-content: center; align-items: center;
+      overflow: hidden;
+      position: relative;
+      opacity: 0;
+      animation: fadeInBackground 2s forwards;
+    }
+
+    @keyframes fadeInBackground {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .smoke {
+      position: absolute;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.03), transparent 40%),
+                  radial-gradient(circle at 70% 70%, rgba(255,255,255,0.03), transparent 40%);
+      backdrop-filter: blur(2px);
+      animation: moveSmoke 120s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes moveSmoke {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-50px, -50px) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+
+    #particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, yellow 0%, rgba(255, 255, 0, 0) 70%);
+      border-radius: 50%;
+      filter: blur(2px);
+      opacity: 0.8;
+      animation: drift 15s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(20px, -20px); }
+      100% { transform: translate(-20px, 20px); }
+    }
+
+    #ringContainer {
+      position: relative;
+      width: 0; height: 0;
+      z-index: 2;
+    }
+
+    .model-wrapper {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      animation: fadeInModels 2s forwards;
+    }
+
+    @keyframes fadeInModels {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .model-wrapper:nth-child(1) { animation-delay: 0.5s; }
+    .model-wrapper:nth-child(2) { animation-delay: 1s; }
+    .model-wrapper:nth-child(3) { animation-delay: 1.5s; }
+    .model-wrapper:nth-child(4) { animation-delay: 2s; }
+    .model-wrapper:nth-child(5) { animation-delay: 2.5s; }
+    .model-wrapper:nth-child(6) { animation-delay: 3s; }
+
+    model-viewer {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+    }
+
+    .book model-viewer     { width: 150px; height: 150px; }
+    .crystal model-viewer  { width: 70px; height: 100px; }
+    .power model-viewer    { width: 80px; height: 100px; }
+    .cauldron model-viewer { width: 100px; height: 100px; }
+    .staff model-viewer    { width: 100px; height: 110px; }
+    .hat model-viewer      { width: 100px; height: 120px; }
+
+    .center-card {
+      position: absolute;
+      width: 240px;
+      padding: 20px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      border-radius: 15px;
+      text-align: center;
+      color: white;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+      animation-delay: 0.7s;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .center-card:hover {
+      cursor: pointer;
+      transform: scale(1.05);
+    }
+
+    .center-card img {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.6);
+      object-fit: cover;
+      margin-bottom: 12px;
+    }
+
+    .click-prompt {
+      position: absolute;
+      bottom: 50px;
+      font-size: 16px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 14px;
+      border-radius: 12px;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.4s ease-in-out;
+      z-index: 20;
+    }
+
+    .click-prompt.hidden {
+      opacity: 0;
+    }
+
+    .tooltip {
+      position: absolute;
+      padding: 6px 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      font-size: 13px;
+      border-radius: 4px;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 30;
+    }
+
+    .icon-wrapper {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 50px;
+      height: 50px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      backdrop-filter: blur(3px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      z-index: 50;
+      opacity: 0;
+      animation: fadeInIcon 1.5s forwards;
+      animation-delay: 1s;
+    }
+
+    @keyframes fadeInIcon {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .icon-wrapper:hover {
+      transform: scale(1.1);
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Popup Styles */
+    #popup {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 300px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      color: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      text-align: center;
+      transition: transform 0.3s ease, opacity 0.5s ease;
+      z-index: 100;
+      opacity: 0;
+    }
+
+    #popup button {
+      margin-top: 15px;
+      padding: 6px 12px;
+      background: #FFE87C;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #popup.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+
+    /* Responsive Layout */
+    .responsive-models {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .responsive-models .left-column,
+    .responsive-models .right-column {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      height: 100%;
+    }
+
+    .responsive-models .left-column {
+      left: 10%;
+      width: 120px;
+    }
+
+    .responsive-models .right-column {
+      right: 10%;
+      width: 120px;
+    }
+
+    .responsive-models model-viewer {
+      position: relative;
+      transform: none;
+      pointer-events: auto;
+      opacity: 0;
+      animation: fadeInModels 2s forwards;
+    }
+
+    .responsive-models model-viewer:nth-child(1) { animation-delay: 0.5s; }
+    .responsive-models model-viewer:nth-child(2) { animation-delay: 1s; }
+    .responsive-models model-viewer:nth-child(3) { animation-delay: 1.5s; }
+
+    /* Adjust model sizes for responsive */
+    .responsive-models .book-model { width: 120px; height: 120px; }
+    .responsive-models .crystal-model { width: 60px; height: 80px; }
+    .responsive-models .power-model { width: 70px; height: 90px; }
+    .responsive-models .cauldron-model { width: 90px; height: 90px; }
+    .responsive-models .staff-model { width: 90px; height: 100px; }
+    .responsive-models .hat-model { width: 90px; height: 110px; }
+
+    @media (max-width: 992px) {
+      #ringContainer {
+        display: none;
+      }
+      .responsive-models {
+        display: flex;
+      }
+      .center-card {
+        width: 220px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .responsive-models .left-column {
+        left: 5%;
+        width: 100px;
+      }
+      .responsive-models .right-column {
+        right: 5%;
+        width: 100px;
+      }
+      .responsive-models .book-model { width: 100px; height: 100px; }
+      .responsive-models .crystal-model { width: 50px; height: 70px; }
+      .responsive-models .power-model { width: 60px; height: 80px; }
+      .responsive-models .cauldron-model { width: 80px; height: 80px; }
+      .responsive-models .staff-model { width: 80px; height: 90px; }
+      .responsive-models .hat-model { width: 80px; height: 100px; }
+      .center-card {
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <audio id="bg-music" src="sound/audio/birds39-forest-20772.mp3" autoplay loop></audio>
+  <div class="smoke"></div>
+  <div id="particles"></div>
+  
+  <!-- Desktop Circular Layout -->
+  <div id="ringContainer">
+    <!-- Book Model -->
+    <div class="model-wrapper book">
+      <model-viewer 
+        src="models/Evil Book.glb"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        min-camera-orbit="auto 90deg auto"
+        max-camera-orbit="auto 90deg auto"
+        data-tooltip="Storytelling & Writing">
+      </model-viewer>
+    </div>
+    
+    <!-- Crystal Model -->
+    <div class="model-wrapper crystal">
+      <model-viewer 
+        src="models/crystal/scene.gltf"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        min-camera-orbit="auto 90deg auto"
+        max-camera-orbit="auto 90deg auto"
+        data-tooltip="Creative Ideas">
+      </model-viewer>
+    </div>
+    
+    <!-- Power Model -->
+    <div class="model-wrapper power">
+      <model-viewer 
+        src="models/power/scene.gltf"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        min-camera-orbit="auto 90deg auto"
+        max-camera-orbit="auto 90deg auto"
+        data-tooltip="Problem Solving">
+      </model-viewer>
+    </div>
+    
+    <!-- Cauldron Model -->
+    <div class="model-wrapper cauldron">
+      <model-viewer 
+        src="models/magic_cauldron_lowpoly/scene.gltf"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        min-camera-orbit="auto 90deg auto"
+        max-camera-orbit="auto 90deg auto"
+        data-tooltip="Project Management">
+      </model-viewer>
+    </div>
+    
+    <!-- Staff Model -->
+    <div class="model-wrapper staff">
+      <model-viewer 
+        src="models/staff-transformed.glb"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        min-camera-orbit="auto 90deg auto"
+        max-camera-orbit="auto 90deg auto"
+        data-tooltip="Technical Skills">
+      </model-viewer>
+    </div>
+    
+    <!-- Hat Model -->
+    <div class="model-wrapper hat">
+      <model-viewer 
+        src="models/hat-transformed.glb"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        min-camera-orbit="auto 90deg auto"
+        max-camera-orbit="auto 90deg auto"
+        data-tooltip="UX/UI Design">
+      </model-viewer>
+    </div>
+  </div>
+
+  <!-- Responsive Column Layout -->
+  <div class="responsive-models">
+    <div class="left-column">
+      <model-viewer 
+        class="book-model"
+        src="models/Evil Book.glb"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        data-tooltip="Storytelling & Writing">
+      </model-viewer>
+      
+      <model-viewer 
+        class="crystal-model"
+        src="models/crystal/scene.gltf"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        data-tooltip="Creative Ideas">
+      </model-viewer>
+      
+      <model-viewer 
+        class="power-model"
+        src="models/power/scene.gltf"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        data-tooltip="Problem Solving">
+      </model-viewer>
+    </div>
+    
+    <div class="right-column">
+      <model-viewer 
+        class="cauldron-model"
+        src="models/magic_cauldron_lowpoly/scene.gltf"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        data-tooltip="Project Management">
+      </model-viewer>
+      
+      <model-viewer 
+        class="staff-model"
+        src="models/staff-transformed.glb"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        data-tooltip="Technical Skills">
+      </model-viewer>
+      
+      <model-viewer 
+        class="hat-model"
+        src="models/hat-transformed.glb"
+        camera-controls
+        disable-zoom
+        disable-pan
+        interaction-prompt="none"
+        data-tooltip="UX/UI Design">
+      </model-viewer>
+    </div>
+  </div>
+
+  <div class="center-card">
+    <img src="images/IMG_20250712_103356.jpg" alt="Hans Kurvey C Filart">
+    <h2>Hans Kurvey C Filart</h2>
+    <p>Web Developer & Designer</p>
+  </div>
+
+  <div class="click-prompt">✨ Click an object to know more about me!</div>
+  <div class="tooltip"></div>
+
+  <div class="icon-wrapper" onclick="location.href='Home.html'">
+    <i class="fas fa-home"></i>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup">
+    <h2 id="popupTitle"></h2>
+    <p id="popupContent" style="font-size: 14px; opacity: 0.9;"></p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    // Particles
+    const particleContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.top = Math.random() * 100 + 'vh';
+      particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+      particle.style.animationDelay = (Math.random() * 15) + 's';
+      particleContainer.appendChild(particle);
+    }
+
+    const ring = document.getElementById('ringContainer');
+    const prompt = document.querySelector('.click-prompt');
+    const tooltip = document.querySelector('.tooltip');
+
+    const popupInfo = { 
+      "book": "Hi, I'm Hans Filart! I love sharing my journey a story filled with passion for coding, design, and creativity.",
+      "crystal": "My dreams are clear like a crystal I aspire to build creative projects that inspire and innovate.",
+      "power": "I excel in problem-solving, leading projects, and pushing boundaries with creative solutions.",
+      "cauldron": "Project management is where I blend ideas, skills, and teamwork to brew successful results.",
+      "staff": "I wield skills in Java, JavaScript, PHP, HTML, CSS, and UI/UX design my staff of tech tools.",
+      "hat": "I adapt and wear many hats always learning, exploring, and growing as a developer and creator."
+    };
+
+    const wrappers = Array.from(document.querySelectorAll('.model-wrapper'));
+    const radius = 300;
+    let angle = 0, paused = false;
+
+    // Initialize all model viewers with event listeners
+    document.querySelectorAll('model-viewer').forEach(v => {
+      let isDragging = false;
+
+      v.addEventListener('mousedown', () => isDragging = true);
+      v.addEventListener('touchstart', () => isDragging = true);
+      v.addEventListener('mouseup', () => isDragging = false);
+      v.addEventListener('touchend', () => isDragging = false);
+
+      v.addEventListener('click', () => {
+        if (!isDragging) {
+          prompt.classList.add('hidden');
+          const tooltip = v.getAttribute('data-tooltip') || v.parentElement.getAttribute('data-tooltip');
+          let modelClass = '';
+          
+          if (v.parentElement.classList.contains('model-wrapper')) {
+            modelClass = v.parentElement.classList[1];
+          } else if (v.classList.contains('book-model')) {
+            modelClass = 'book';
+          } else if (v.classList.contains('crystal-model')) {
+            modelClass = 'crystal';
+          } else if (v.classList.contains('power-model')) {
+            modelClass = 'power';
+          } else if (v.classList.contains('cauldron-model')) {
+            modelClass = 'cauldron';
+          } else if (v.classList.contains('staff-model')) {
+            modelClass = 'staff';
+          } else if (v.classList.contains('hat-model')) {
+            modelClass = 'hat';
+          }
+          
+          showPopup(tooltip, popupInfo[modelClass]);
+        }
+      });
+
+      v.addEventListener('mouseenter', () => paused = true);
+      v.addEventListener('mouseleave', () => paused = false);
+
+      v.addEventListener('mouseenter', (e) => {
+        const tooltipText = v.getAttribute('data-tooltip');
+        tooltip.textContent = tooltipText;
+        tooltip.style.opacity = 1;
+      });
+      
+      v.addEventListener('mousemove', e => {
+        tooltip.style.left = e.pageX + 12 + 'px';
+        tooltip.style.top = e.pageY + 12 + 'px';
+      });
+      
+      v.addEventListener('mouseleave', () => {
+        tooltip.style.opacity = 0;
+      });
+    });
+
+    // Animate the orbiting models (desktop only)
+    function loop() {
+      if (!paused && window.innerWidth > 992) angle += 0.003;
+      wrappers.forEach((w, i) => {
+        const theta = i * (2 * Math.PI / wrappers.length) + angle;
+        w.style.left = `${Math.cos(theta) * radius}px`;
+        w.style.top  = `${Math.sin(theta) * radius}px`;
+        w.style.transform = `translate(-50%,-50%)`;
+      });
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    // Popup Functions
+    const popup = document.getElementById('popup');
+    const popupTitle = document.getElementById('popupTitle');
+    const popupContent = document.getElementById('popupContent');
+
+    function showPopup(title, content) {
+      popupTitle.textContent = title;
+      popupContent.textContent = content;
+      popup.classList.add('show');
+    }
+
+    function closePopup() {
+      popup.classList.remove('show');
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth <= 992) {
+        document.getElementById('ringContainer').style.display = 'none';
+        document.querySelector('.responsive-models').style.display = 'flex';
+      } else {
+        document.getElementById('ringContainer').style.display = 'block';
+        document.querySelector('.responsive-models').style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
