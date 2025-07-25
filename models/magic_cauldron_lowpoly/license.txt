@@ -1,0 +1,11 @@
+Model Information:
+* title:	Magic Cauldron lowpoly
+* source:	https://sketchfab.com/3d-models/magic-cauldron-lowpoly-b7295d1f9c484a84a53f7ba62ead149e
+* author:	Wnsz (https://sketchfab.com/gerard.krol22)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Magic Cauldron lowpoly" (https://sketchfab.com/3d-models/magic-cauldron-lowpoly-b7295d1f9c484a84a53f7ba62ead149e) by Wnsz (https://sketchfab.com/gerard.krol22) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
